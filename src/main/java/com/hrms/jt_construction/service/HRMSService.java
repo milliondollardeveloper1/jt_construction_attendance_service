@@ -20,7 +20,7 @@ public class HRMSService {
 
     public String createNewDepartment(DepartmentRequet request) {
         Department entity = null;
-        entity = departmentRepository.findByDepartmentNameContainingIgnoreCase(request.getDepartmentName()).orElse(null);
+        entity = departmentRepository.findByDepartmentName(request.getDepartmentName()).orElse(null);
         if (entity == null) {
             entity = new Department();
             entity.setDepartmentName(request.getDepartmentName());
