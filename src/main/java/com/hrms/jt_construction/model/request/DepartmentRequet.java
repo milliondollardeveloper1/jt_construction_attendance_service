@@ -7,4 +7,5 @@ public class DepartmentRequet {
     private int departmentId;
     private String departmentName;
     private String salaryType;
+    private String modifyDepartmentName;
 }
