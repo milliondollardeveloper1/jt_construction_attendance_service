@@ -3,9 +3,11 @@ package com.hrms.jt_construction.controller;
 import com.hrms.jt_construction.jpa.Department;
 import com.hrms.jt_construction.model.request.DepartmentRequet;
 import com.hrms.jt_construction.model.request.EmployeeRequest;
+import com.hrms.jt_construction.model.request.SalaryAdvanceRequest;
 import com.hrms.jt_construction.model.response.DepartmentsResponse;
 import com.hrms.jt_construction.model.response.EmployeeResponse;
 import com.hrms.jt_construction.model.response.ResponseMessage;
+import com.hrms.jt_construction.model.response.SalaryAdvanceResponse;
 import com.hrms.jt_construction.service.HRMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,16 +71,16 @@ public class HRMSController {
         String message = null;
         try {
             message = this.hrmsService.deleteDepartment(request);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
+            if (message.contains("success"))
+                return ResponseEntity.ok(new ResponseMessage(message));
+            return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok(new ResponseMessage(message));
     }
 
     @GetMapping("/fetch-employees")
-    public ResponseEntity<?> getDEmployees() {
+    public ResponseEntity<?> getEmployees() {
         List<EmployeeResponse> employeeResponse = null;
         try {
             employeeResponse = this.hrmsService.getAllEmployeess();
@@ -88,8 +90,8 @@ public class HRMSController {
         return ResponseEntity.ok(employeeResponse);
     }
 
-    @PostMapping("/create-department")
-    public ResponseEntity<?> addDepartment(@RequestBody EmployeeRequest requet) {
+    @PostMapping("/create-employee")
+    public ResponseEntity<?> addEmployee(@RequestBody EmployeeRequest requet) {
         try {
             String message = this.hrmsService.createNewDEmployee(requet);
             if (message.contains("success"))
@@ -112,16 +114,64 @@ public class HRMSController {
         }
     }
 
-    @DeleteMapping("/delete-department")
+    @DeleteMapping("/delete-employee")
     public ResponseEntity<?> deleteEmployee(@RequestBody EmployeeRequest request) {
         String message = null;
         try {
             message = this.hrmsService.deleteEmployee(request);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
+            if (message.contains("success"))
+                return ResponseEntity.ok(new ResponseMessage(message));
+            return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok(new ResponseMessage(message));
+    }
+
+
+    @GetMapping("/fetch-salary-advance")
+    public ResponseEntity<?> getSalaryAdvance() {
+        List<SalaryAdvanceResponse> salaryAdvanceResponses = null;
+        try {
+            salaryAdvanceResponses = this.hrmsService.getAllSalaryAdvances();
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(salaryAdvanceResponses);
+    }
+
+    @PostMapping("/create-salary-advance")
+    public ResponseEntity<?> addDalaryAdvance(@RequestBody SalaryAdvanceRequest requet) {
+        try {
+            String message = this.hrmsService.createNewDSalaryAdvance(requet);
+            if (message.contains("success"))
+                return ResponseEntity.ok(new ResponseMessage(message));
+            return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update-salary-advance")
+    public ResponseEntity<?> updateSalaryAdvance(@RequestBody SalaryAdvanceRequest request) {
+        try {
+            String message = this.hrmsService.editSalaryAdvance(request);
+            if (message.contains("success"))
+                return ResponseEntity.ok(new ResponseMessage(message));
+            return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/delete-salary-advance")
+    public ResponseEntity<?> deleteSalaryAdvance(@RequestBody SalaryAdvanceRequest request) {
+        try {
+            String message = this.hrmsService.deleteSalaryAdvance(request);
+            if (message.contains("success"))
+                return ResponseEntity.ok(new ResponseMessage(message));
+            return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
