@@ -11,6 +11,7 @@ import com.hrms.jt_construction.model.request.EmployeeRequest;
 import com.hrms.jt_construction.model.request.SalaryAdvanceRequest;
 import com.hrms.jt_construction.model.response.DepartmentsResponse;
 import com.hrms.jt_construction.model.response.EmployeeResponse;
+import com.hrms.jt_construction.model.response.ResponseMessage;
 import com.hrms.jt_construction.model.response.SalaryAdvanceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,11 @@ public class HRMSService {
         entity = departmentRepository.findByDepartmentName(request.getModifyDepartmentName()).orElse(null);
         if (entity == null)
             return "Department not found";
+        List<Employee> employeeEntityList = employeeRepository.findByDepartment(request.getModifyDepartmentName());
+        for (Employee employee : employeeEntityList) {
+            employee.setDepartment(request.getDepartmentName());
+            employeeRepository.save(employee);
+        }
         int existingID = entity.getId();
         entity = new Department();
         entity.setDepartmentName(request.getDepartmentName());
@@ -83,6 +89,11 @@ public class HRMSService {
         entity = departmentRepository.findByDepartmentName(requet.getDepartmentName()).orElse(null);
         if (entity == null)
             return "Department not found";
+        List<Employee> employeeEntityList = employeeRepository.findByDepartment(requet.getDepartmentName());
+        for (Employee employee : employeeEntityList) {
+            employee.setDepartment(null);
+            employeeRepository.save(employee);
+        }
         departmentRepository.deleteById(entity.getId());
         if (departmentRepository.existsById(entity.getId())) {
             return "Deletion failed";
@@ -106,7 +117,7 @@ public class HRMSService {
         return response;
     }
 
-    public String createNewDEmployee(EmployeeRequest request) {
+    public ResponseMessage createNewDEmployee(EmployeeRequest request) {
         Employee entity = new Employee();
         entity.setName(request.getName());
         entity.setMobile(request.getMobile());
@@ -114,9 +125,16 @@ public class HRMSService {
         entity.setHoursOfWork(request.getHoursOfWork());
         entity.setSalary(request.getSalary());
         Employee employee = employeeRepository.save(entity);
-        if (employee.getId() != null)
-            return "Employee added successfully";
-        return "Department creation failed";
+        if (employee.getId() != null) {
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setMessage("Employee created successfully");
+            responseMessage.setCreatedID(employee.getId());
+            return responseMessage;
+        }
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setMessage("Employee creation failed");
+        responseMessage.setCreatedID(-1);
+        return responseMessage;
     }
 
     public String editDEmployee(EmployeeRequest request) {
@@ -159,6 +177,7 @@ public class HRMSService {
             response.setEmployeeName(advance.getEmployee().getName());
             response.setEmployeeDepartment(advance.getEmployee().getDepartment());
             response.setEmployeeId(advance.getEmployee().getId());
+            response.setIssuedOn(advance.getIssuedOn());
             responseList.add(response);
         }
         return responseList;
@@ -168,6 +187,7 @@ public class HRMSService {
         SalaryAdvance entity = new SalaryAdvance();
         entity.setAmount(new BigDecimal(request.getAmount()));
         entity.setRemarks(request.getRemarks());
+        entity.setIssuedOn(request.getIssuedOn());
         Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
         if (employee == null)
             return "Employee not found";
@@ -182,11 +202,15 @@ public class HRMSService {
         SalaryAdvance entity = salaryAdvanceRepository.findById(request.getUniqueID()).orElse(null);
         if (entity == null)
             return "Salary advance not found";
+        Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
+        if (employee == null)
+            return "Employee not found";
         long existingID = entity.getId();
         entity = new SalaryAdvance();
-        entity.setEmployee(entity.getEmployee());
+        entity.setEmployee(employee);
         entity.setAmount(new BigDecimal(request.getAmount()));
         entity.setRemarks(request.getRemarks());
+        entity.setIssuedOn(request.getIssuedOn());
         entity.setId(existingID);
         SalaryAdvance modifiedEntity = salaryAdvanceRepository.save(entity);
         if (modifiedEntity.getId() != null)

@@ -62,7 +62,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to update departments."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,7 +75,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to delete departments."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -85,7 +85,7 @@ public class HRMSController {
         try {
             employeeResponse = this.hrmsService.getAllEmployeess();
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch employees."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(employeeResponse);
     }
@@ -93,10 +93,10 @@ public class HRMSController {
     @PostMapping("/create-employee")
     public ResponseEntity<?> addEmployee(@RequestBody EmployeeRequest requet) {
         try {
-            String message = this.hrmsService.createNewDEmployee(requet);
-            if (message.contains("success"))
-                return ResponseEntity.ok(new ResponseMessage(message));
-            return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
+            ResponseMessage message = this.hrmsService.createNewDEmployee(requet);
+            if (message.getCreatedID() > -1)
+                return ResponseEntity.ok(message);
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -110,7 +110,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to update employee."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,7 +123,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to delete employee."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,7 +134,7 @@ public class HRMSController {
         try {
             salaryAdvanceResponses = this.hrmsService.getAllSalaryAdvances();
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(salaryAdvanceResponses);
     }
@@ -147,7 +147,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to create salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -159,7 +159,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to update salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -171,7 +171,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to delete salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
