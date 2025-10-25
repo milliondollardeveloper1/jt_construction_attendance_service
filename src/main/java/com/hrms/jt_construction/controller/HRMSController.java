@@ -37,7 +37,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to create departments."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -107,7 +107,7 @@ public class HRMSController {
                 return ResponseEntity.ok(message);
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch departments."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to create employee."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -186,13 +186,13 @@ public class HRMSController {
 
     @GetMapping("/get-attendance")
     public ResponseEntity<?> getAttendance(@RequestParam String date, @RequestParam(defaultValue = "ALL") String department) {
-        List<AttendanceResponse> attendanceResponses = null;
+        List<EmployeeAttendanceProjection> attendanceResponses = null;
         try {
             attendanceResponses = this.hrmsService.getAllAttendance(date, department);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch attendance records."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(attendanceResponses);
     }
@@ -205,8 +205,21 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to delete salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to update attendace records."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/get-report")
+    public ResponseEntity<?> getReport(@RequestParam int month, @RequestParam int year) {
+        List<MonthlySalaryCalculationProjection> responses = null;
+        try {
+            responses = this.hrmsService.generateEmployeesReport(month, year);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to fetch salary advance."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(responses);
     }
 
 }

@@ -8,13 +8,9 @@ import com.hrms.jt_construction.jpa.repos.AttendanceRepository;
 import com.hrms.jt_construction.jpa.repos.DepartmentRepository;
 import com.hrms.jt_construction.jpa.repos.EmployeeRepository;
 import com.hrms.jt_construction.jpa.repos.SalaryAdvanceRepository;
-import com.hrms.jt_construction.model.request.AttendanceRequest;
-import com.hrms.jt_construction.model.request.DepartmentRequet;
-import com.hrms.jt_construction.model.request.EmployeeRequest;
-import com.hrms.jt_construction.model.request.SalaryAdvanceRequest;
+import com.hrms.jt_construction.model.request.*;
 import com.hrms.jt_construction.model.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,14 +93,11 @@ public class HRMSService {
         if (entity == null)
             return "Department not found";
         List<Employee> employeeEntityList = employeeRepository.findByDepartment(requet.getDepartmentName());
-        for (Employee employee : employeeEntityList) {
-            employee.setDepartment(null);
-            employeeRepository.save(employee);
-        }
+        if (!employeeEntityList.isEmpty())
+            return "Some employees mapped to this department";
         departmentRepository.deleteById(entity.getId());
-        if (departmentRepository.existsById(entity.getId())) {
+        if (departmentRepository.existsById(entity.getId()))
             return "Deletion failed";
-        }
         return "Department deleted successfully";
     }
 
@@ -263,33 +256,11 @@ public class HRMSService {
         return "Salary advance deleted successfully";
     }
 
-    public List<AttendanceResponse> getAllAttendance(String date, String department) {
-        List<AttendanceResponse> responseList = new ArrayList<>();
+    public List<EmployeeAttendanceProjection> getAllAttendance(String date, String department) {
+        List<EmployeeAttendanceProjection> responseList = new ArrayList<>();
         if (date == null || date.isEmpty())
             throw new IllegalArgumentException("Date is empty");
-        if (department == null || department.equalsIgnoreCase("ALL") || department.isEmpty()) {
-            List<Attendance> attendanceList = this.attendanceRepository.findByDate(stringToLocalDate(date));
-            return getAttendanceResponses(responseList, attendanceList);
-        }else {
-            List<Attendance> attendanceList = this.attendanceRepository.findByDateAndEmployee_Department(stringToLocalDate(date), department);
-            return getAttendanceResponses(responseList, attendanceList);
-        }
-
-    }
-
-    private List<AttendanceResponse> getAttendanceResponses(List<AttendanceResponse> responseList, List<Attendance> attendanceList) {
-        for (Attendance attendance : attendanceList) {
-            AttendanceResponse attendanceResponse = new AttendanceResponse();
-            attendanceResponse.setId(attendance.getId());
-            attendanceResponse.setEmployeeId(attendance.getEmployee().getId());
-            attendanceResponse.setEmployeeName(attendance.getEmployee().getName());
-            attendanceResponse.setDate(localDateToString(attendance.getDate()));
-            attendanceResponse.setStatus(attendance.getStatus());
-            attendanceResponse.setRemarks(attendance.getRemarks());
-            attendanceResponse.setEmployeeDepartment(attendance.getEmployee().getDepartment());
-            responseList.add(attendanceResponse);
-        }
-        return responseList;
+        return this.attendanceRepository.findEmployeeAttendanceByDate(stringToLocalDate(date), department.equalsIgnoreCase("all") ? null : department);
     }
 
     @Transactional
@@ -328,5 +299,13 @@ public class HRMSService {
         this.attendanceRepository.saveAll(recordsToSave);
 
         return "Attendance batch processed successfully.";
+    }
+
+    public List<MonthlySalaryCalculationProjection> generateEmployeesReport(int month, int year) {
+        if (month < 1 || month > 12)
+            throw new IllegalArgumentException("Not a valid Month");
+        List<MonthlySalaryCalculationProjection> responseList =  new ArrayList<>();
+        responseList = this.attendanceRepository.calculateActualSalaryForMonth(year, month);
+        return responseList;
     }
 }
