@@ -210,10 +210,10 @@ public class HRMSController {
     }
 
     @GetMapping("/get-report")
-    public ResponseEntity<?> getReport(@RequestParam int month, @RequestParam int year) {
+    public ResponseEntity<?> getReport(@RequestParam int month, @RequestParam int year, @RequestParam(defaultValue = "ALL") String department) {
         List<MonthlySalaryCalculationProjection> responses = null;
         try {
-            responses = this.hrmsService.generateEmployeesReport(month, year);
+            responses = this.hrmsService.generateEmployeesReport(month, year, department);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

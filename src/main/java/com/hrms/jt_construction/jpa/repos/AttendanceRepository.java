@@ -73,7 +73,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                     "    ((E.salary / " +
                     "     DAY(LAST_DAY(STR_TO_DATE(CONCAT(:targetYear, '-', :targetMonth, '-01'), '%Y-%m-%d')))) * A.totalPresentDays) - COALESCE(S.totalAdvance, 0.00) AS actualSalary " +
                     "FROM employee_tbl E " +
-                    "INNER JOIN ( " +
+                    "INNER JOIN ( " + // Start the first join immediately after FROM
                     "    SELECT " +
                     "        employee_id, " +
                     "        MONTH(date) AS attendanceMonth, " +
@@ -92,11 +92,14 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                     "    WHERE YEAR(issued_on) = :targetYear " +
                     "      AND MONTH(issued_on) = :targetMonth " +
                     "    GROUP BY employee_id " +
-                    ") S ON E.id = S.employee_id",
+                    ") S ON E.id = S.employee_id " +
+                    // Move the WHERE clause to the end, after all JOINs
+                    "WHERE (:department IS NULL OR E.department = :department)",
             nativeQuery = true
     )
     List<MonthlySalaryCalculationProjection> calculateActualSalaryForMonth(
             @Param("targetYear") Integer targetYear,
-            @Param("targetMonth") Integer targetMonth
+            @Param("targetMonth") Integer targetMonth,
+            @Param("department") String department // New optional parameter
     );
 }

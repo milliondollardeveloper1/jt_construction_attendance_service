@@ -295,17 +295,15 @@ public class HRMSService {
 
             recordsToSave.add(attendance);
         }
-
         this.attendanceRepository.saveAll(recordsToSave);
-
         return "Attendance batch processed successfully.";
     }
 
-    public List<MonthlySalaryCalculationProjection> generateEmployeesReport(int month, int year) {
+    public List<MonthlySalaryCalculationProjection> generateEmployeesReport(int month, int year, String department) {
         if (month < 1 || month > 12)
             throw new IllegalArgumentException("Not a valid Month");
         List<MonthlySalaryCalculationProjection> responseList =  new ArrayList<>();
-        responseList = this.attendanceRepository.calculateActualSalaryForMonth(year, month);
+        responseList = this.attendanceRepository.calculateActualSalaryForMonth(year, month, department.equalsIgnoreCase("all") ? null : department);
         return responseList;
     }
 }
