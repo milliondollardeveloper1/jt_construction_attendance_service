@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -122,6 +123,7 @@ public class HRMSService {
             employeeResponse.setDepartment(employee.getDepartment());
             employeeResponse.setHoursOfWork(employee.getHoursOfWork());
             employeeResponse.setSalary(employee.getSalary());
+            employeeResponse.setSalaryType(employee.getSalaryType());
             response.add(employeeResponse);
         }
         return response;
@@ -134,6 +136,7 @@ public class HRMSService {
         entity.setDepartment(request.getDepartment());
         entity.setHoursOfWork(request.getHoursOfWork());
         entity.setSalary(request.getSalary());
+        entity.setSalaryType(request.getSalaryType());
         Employee employee = employeeRepository.save(entity);
         if (employee.getId() != null) {
             ResponseMessage responseMessage = new ResponseMessage();
@@ -158,6 +161,7 @@ public class HRMSService {
         entity.setDepartment(request.getDepartment());
         entity.setHoursOfWork(request.getHoursOfWork());
         entity.setSalary(request.getSalary());
+        entity.setSalaryType(request.getSalaryType());
         entity.setId(existingID);
         Employee employee = employeeRepository.save(entity);
         if (employee.getId() != null)
@@ -178,7 +182,7 @@ public class HRMSService {
 
     public List<SalaryAdvanceResponse> getAllSalaryAdvances() {
         List<SalaryAdvanceResponse> responseList = new ArrayList<>();
-        List<SalaryAdvance> salaryAdvances = salaryAdvanceRepository.findAll();
+        List<SalaryAdvance> salaryAdvances = salaryAdvanceRepository.findAllByOrderByIssuedOnDesc();
         for (SalaryAdvance advance : salaryAdvances) {
             SalaryAdvanceResponse response = new SalaryAdvanceResponse();
             response.setId(advance.getId());

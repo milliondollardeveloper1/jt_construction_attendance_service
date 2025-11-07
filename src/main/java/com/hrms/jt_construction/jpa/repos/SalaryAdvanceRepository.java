@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Repository
 public interface SalaryAdvanceRepository extends JpaRepository<SalaryAdvance, Long> {
+    List<SalaryAdvance> findAllByOrderByIssuedOnDesc();
 
     List<SalaryAdvance> findByEmployeeId(Long employeeId);
 

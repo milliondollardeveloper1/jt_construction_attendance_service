@@ -31,6 +31,9 @@ public class Employee implements Serializable {
     @Column(name = "salary", precision = 10, scale = 2)
     private int salary;
 
+    @Column(name = "salary_type")
+    private String salaryType;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -53,11 +56,12 @@ public class Employee implements Serializable {
     }
 
 
-    public Employee(String name, String mobile, String department, int hoursOfWork, int salary) {
+    public Employee(String name, String mobile, String department, int hoursOfWork, int salary, String salaryType) {
         this.name = name;
         this.mobile = mobile;
         this.department = department;
         this.hoursOfWork = hoursOfWork;
         this.salary = salary;
+        this.salaryType = salaryType;
     }
 }

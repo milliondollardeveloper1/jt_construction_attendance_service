@@ -13,4 +13,5 @@ public interface MonthlySalaryCalculationProjection {
     Integer getTotalDaysInMonth();
     BigDecimal getTotalAdvanceDeduction();
     BigDecimal getActualSalary();
+    String getSalaryType();
 }

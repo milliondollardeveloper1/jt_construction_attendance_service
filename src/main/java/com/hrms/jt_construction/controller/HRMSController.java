@@ -7,11 +7,13 @@ import com.hrms.jt_construction.model.request.EmployeeRequest;
 import com.hrms.jt_construction.model.request.SalaryAdvanceRequest;
 import com.hrms.jt_construction.model.response.*;
 import com.hrms.jt_construction.service.HRMSService;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,7 +134,7 @@ public class HRMSController {
                 return ResponseEntity.ok(new ResponseMessage(message));
             return new ResponseEntity<>(new ResponseMessage(message), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Internal Server Error: Failed to delete employee."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("This employee record cannot be deleted because it is linked to other data"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

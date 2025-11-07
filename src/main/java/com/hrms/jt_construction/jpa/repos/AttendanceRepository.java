@@ -62,18 +62,23 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query(
             value = "SELECT " +
                     "    E.id AS employeeId, " +
-                    "E.name AS employeeName, " +
-                    "E.department AS department, " +
-                    "    E.salary AS monthlySalary, " +
+                    "    E.name AS employeeName, " +
+                    "    E.department AS department, " +
+                    "    E.salary AS MonthlySalary, " + // This was monthlySalary, but renamed to reflect it is the base rate
+                    "    E.salary_type, " + // <-- This is the added salary_type column in the result set
                     "    A.attendanceMonth, " +
                     "    A.attendanceYear, " +
                     "    A.totalPresentDays, " +
                     "    DAY(LAST_DAY(STR_TO_DATE(CONCAT(:targetYear, '-', :targetMonth, '-01'), '%Y-%m-%d'))) AS totalDaysInMonth, " +
                     "    COALESCE(S.totalAdvance, 0.00) AS totalAdvanceDeduction, " +
-                    "    ((E.salary / " +
-                    "     DAY(LAST_DAY(STR_TO_DATE(CONCAT(:targetYear, '-', :targetMonth, '-01'), '%Y-%m-%d')))) * A.totalPresentDays) - COALESCE(S.totalAdvance, 0.00) AS actualSalary " +
+                    "    (CASE E.salary_type " +
+                    "        WHEN 'Daily' THEN " +
+                    "            (E.salary * A.totalPresentDays) " +
+                    "        ELSE " + // Handles 'Monthly' and any other unexpected types safely
+                    "            ((E.salary / DAY(LAST_DAY(STR_TO_DATE(CONCAT(:targetYear, '-', :targetMonth, '-01'), '%Y-%m-%d')))) * A.totalPresentDays) " +
+                    "    END - COALESCE(S.totalAdvance, 0.00)) AS actualSalary " +
                     "FROM employee_tbl E " +
-                    "INNER JOIN ( " + // Start the first join immediately after FROM
+                    "INNER JOIN ( " +
                     "    SELECT " +
                     "        employee_id, " +
                     "        MONTH(date) AS attendanceMonth, " +
@@ -93,7 +98,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                     "      AND MONTH(issued_on) = :targetMonth " +
                     "    GROUP BY employee_id " +
                     ") S ON E.id = S.employee_id " +
-                    // Move the WHERE clause to the end, after all JOINs
                     "WHERE (:department IS NULL OR E.department = :department)",
             nativeQuery = true
     )

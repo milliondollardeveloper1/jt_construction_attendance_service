@@ -10,4 +10,5 @@ public class EmployeeResponse {
     String department;
     int hoursOfWork;
     int salary;
+    String salaryType;
 }

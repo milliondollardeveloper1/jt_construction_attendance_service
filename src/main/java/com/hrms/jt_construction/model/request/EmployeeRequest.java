@@ -10,4 +10,5 @@ public class EmployeeRequest {
     String department;
     int hoursOfWork;
     int salary;
+    String salaryType;
 }
